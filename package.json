@@ -14,11 +14,12 @@
     "FlowFuse",
     "usbhid",
     "usb-hid",
-    "Node-RED",
+    "node-red",
     "barcodescanner",
     "usb"
   ],
   "node-red": {
+    "version": ">=2.0.0",
     "nodes": {
       "usbhid": "usbhid/usbhid.js"
     }
