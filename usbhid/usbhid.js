@@ -14,17 +14,15 @@ module.exports = function(RED) {
 
     this.server = RED.nodes.getNode(config.connection);
 
-    // console.log(this.server.vid);
 
     try {
 
 
-      var hexvid = parseInt(this.server.vid, 10);
-      var hexpid = parseInt(this.server.pid, 10); 
+      var intvid = parseInt(this.server.vid, 10);
+      var intpid = parseInt(this.server.pid, 10); 
 
-      var device = new HID.HID(hexvid, hexpid);
+      var device = new HID.HID(intvid, intpid);
 
-      //var device = new HID.HID(0x5E0, 0x600);
 
 
       this.status({
