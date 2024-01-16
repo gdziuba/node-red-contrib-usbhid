@@ -1,6 +1,6 @@
 {
   "name": "node-red-usbhid",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A node-hid (USB HID device access library) wrapper for Node-RED",
   "dependencies": {
     "node-hid": "^3.0.0"
