@@ -1,6 +1,6 @@
 {
-  "name": "node-red-usbhid",
-  "version": "1.0.2",
+  "name": "@gdziuba/node-red-usbhid",
+  "version": "1.0.3",
   "description": "A node-hid (USB HID device access library) wrapper for Node-RED",
   "dependencies": {
     "node-hid": "^3.0.0"
@@ -30,7 +30,6 @@
     "url": "https://github.com/gdziuba/node-red-contrib-usbhid/issues"
   },
   "homepage": "https://github.com/gdziuba/node-red-contrib-usbhid#readme",
-  "main": "index.js",
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
