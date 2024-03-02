@@ -61,8 +61,17 @@ Now add the following rules to /etc/udev/rules.d/85-pure-data.rules making sure 
 ```
 SUBSYSTEM=="input", GROUP="input", MODE="0777"
 SUBSYSTEM=="usb", MODE:="777", GROUP="input"
+KERNEL=="hidraw<<put HID Number Here>>", MODE="0777", GROUP="input"
+```
+
+Example:
+
+```
+SUBSYSTEM=="input", GROUP="input", MODE="0777"
+SUBSYSTEM=="usb", MODE:="777", GROUP="input"
 KERNEL=="hidraw0", MODE="0777", GROUP="input"
 ```
+
 **Make sure no existing rules compete.  I found existing file on Raspberry pi that needed updating.  I added above code instead of creating a new file**
 
 Then create an "input" group and add yourself to it:
