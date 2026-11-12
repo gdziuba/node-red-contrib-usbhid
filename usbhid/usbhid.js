@@ -7,7 +7,7 @@ module.exports = function(RED) {
     this.vid = n.vid;
     this.pid = n.pid;
     this.reconnect = n.reconnect !== false;
-    this.reconnectInterval = parseFloat(n.reconnectInterval) || 2;
+    this.reconnectInterval = Math.max(0.5, parseFloat(n.reconnectInterval) || 2);
     // console.log(this.vid);
   }
 
@@ -67,7 +67,7 @@ module.exports = function(RED) {
       message.payload = err;
       node.send([null, message]);
 
-      try { device.close(); } catch (e) {}
+      try { device.removeAllListeners(); device.close(); } catch (e) {}
       device = null;
       node.status({
         fill: "red",
