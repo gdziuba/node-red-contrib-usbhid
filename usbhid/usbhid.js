@@ -6,6 +6,8 @@ module.exports = function(RED) {
     RED.nodes.createNode(this, n);
     this.vid = n.vid;
     this.pid = n.pid;
+    this.reconnect = n.reconnect !== false;
+    this.reconnectInterval = Math.max(0.5, parseFloat(n.reconnectInterval) || 2);
     // console.log(this.vid);
   }
 
@@ -15,32 +17,38 @@ module.exports = function(RED) {
     this.server = RED.nodes.getNode(config.connection);
 
 
+    var node = this;
+    var device = null;
+    var reconnectTimer = null;
+    var closed = false;
+
+
+    function connect() {
     try {
 
 
-      var intvid = parseInt(this.server.vid, 10);
-      var intpid = parseInt(this.server.pid, 10); 
+      var intvid = parseInt(node.server.vid, 10);
+      var intpid = parseInt(node.server.pid, 10); 
 
-      var device = new HID.HID(intvid, intpid);
+      device = new HID.HID(intvid, intpid);
 
 
 
-      this.status({
+      node.status({
         fill: "green",
         shape: "dot",
         text: "connected"
       });
 
     } catch (err) {
-      this.status({
+      node.status({
         fill: "red",
         shape: "ring",
         text: "disconnected"
       });
+      scheduleReconnect();
+      return;
     }
-
-
-    var node = this;
 
 
     device.on("data", function(data) {
@@ -58,10 +66,39 @@ module.exports = function(RED) {
       };
       message.payload = err;
       node.send([null, message]);
+
+      try { device.removeAllListeners(); device.close(); } catch (e) {}
+      device = null;
+      node.status({
+        fill: "red",
+        shape: "ring",
+        text: "disconnected"
+      });
+      scheduleReconnect();
     });
+    }
+
+
+    function scheduleReconnect() {
+      if (closed || reconnectTimer || !node.server || !node.server.reconnect) {
+        return;
+      }
+      reconnectTimer = setTimeout(function() {
+        reconnectTimer = null;
+        connect();
+      }, node.server.reconnectInterval * 1000);
+    }
+
+
+    connect();
 
     this.on('input', function(msg) {
 
+
+      if (!device) {
+        node.error("HID device not connected", msg);
+        return;
+      }
 
       var data = toArray(msg.payload);
 
@@ -71,7 +108,13 @@ module.exports = function(RED) {
 
 
     this.on('close', function() {
-      device.close();
+      closed = true;
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+      if (device) {
+        device.close();
+        device = null;
+      }
     });
 
 

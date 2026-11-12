@@ -4,10 +4,21 @@
     defaults: {
       vid: {value: '', required: true},
       pid: {value: '', required: true},
+      reconnect: {value: true},
+      reconnectInterval: {value: 2, required: true, validate: RED.validators.number()},
       name: {value: ''}
     },
     label: function(){
       return this.name || 'HIDConfig';
+    },
+    oneditprepare: function() {
+      // configs saved before these options existed don't get the defaults applied by the editor
+      if (this.reconnect === undefined) {
+        $("#node-config-input-reconnect").prop("checked", true);
+      }
+      if (this.reconnectInterval === undefined) {
+        $("#node-config-input-reconnectInterval").val(2);
+      }
     }
   });
 </script>
@@ -25,6 +36,14 @@
     <input type="text" id="node-config-input-pid" placeholder="">
   </div>
 
+  <div class="form-row">
+    <label for="node-config-input-reconnect"><i class="fa fa-refresh"></i> Reconnect</label>
+    <input type="checkbox" id="node-config-input-reconnect" style="display:inline-block; width:auto; vertical-align:top;">
+    <span>every</span>
+    <input type="text" id="node-config-input-reconnectInterval" style="width:60px;">
+    <span>seconds</span>
+  </div>
+
     <div class="form-row">
     <label for="node-config-input-name"><i class="fa "></i> Name</label>
     <input type="text" id="node-config-input-name" placeholder="USB Device">
@@ -34,6 +53,8 @@
 
 <script type="text/x-red" data-help-name="HIDConfig">
   <p>Details of the HID Device connection</p>
+  <p><b>Reconnect</b>: when enabled, HIDdevice nodes using this connection retry opening the device every <i>N</i> seconds
+  while it is absent at startup or after it is unplugged / errors. When disabled, they open the device once (original behaviour).</p>
 </script>
 
 
@@ -102,6 +123,7 @@
 
 <script type="text/x-red" data-help-name="HIDdevice">
     <p>A simple node that receives BYTE array or Buffer as msg.payload and sends it to the HID Device. It sends received data as msg.payload (Buffer) to output 1 and errors to output 2</p>
+    <p>Reconnect behaviour is set on the HIDConfig connection.</p>
 </script>
 
 
